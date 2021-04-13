@@ -3,11 +3,12 @@ package com.gusbak.cursomc.services;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.gusbak.cursomc.domain.Categoria;
 import com.gusbak.cursomc.repositories.CategoriaRepository;
-
+import com.gusbak.cursomc.services.exceptions.DataIntegrityException;
 import com.gusbak.cursomc.services.exceptions.ObjectNotFoundException;
 
 @Service
@@ -30,5 +31,14 @@ public class CategoriaService {
 	public Categoria update(Categoria obj) {
 		find(obj.getId()); 
 		return repo.save(obj);
+	}
+	
+	public void delete(Integer id) {
+		try {
+			repo.deleteById(id);
+		}
+		catch (DataIntegrityViolationException e) {
+			throw new DataIntegrityException("Não é possível excluir categoria que possui produtos");
+		}
 	}
 }
